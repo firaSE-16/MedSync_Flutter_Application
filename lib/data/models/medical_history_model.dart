@@ -22,37 +22,44 @@ class MedicalHistoryModel {
   });
 
   factory MedicalHistoryModel.fromJson(Map<String, dynamic> json) {
-    // Correctly extract patientId
-    final String extractedPatientId = json['patientId'] is Map
-        ? json['patientId']['_id'] as String
-        : json['patientId'] as String;
+    // Handle patientId and patientName
+    String extractedPatientId = '';
+    String extractedPatientName = 'Unknown Patient';
+    if (json['patientId'] != null) {
+      if (json['patientId'] is Map) {
+        extractedPatientId = json['patientId']['_id']?.toString() ?? '';
+        extractedPatientName = json['patientId']['name']?.toString() ?? 'Unknown Patient';
+      } else {
+        extractedPatientId = json['patientId'].toString();
+        extractedPatientName = json['patientName']?.toString() ?? 'Unknown Patient';
+      }
+    }
 
-    // Correctly extract patientName
-    final String extractedPatientName = json['patientId'] is Map
-        ? json['patientId']['name'] as String
-        : json['patientName'] as String;
-
-    // Correctly extract doctorId
-    final String extractedDoctorId = json['doctorId'] is Map
-        ? json['doctorId']['_id'] as String
-        : json['doctorId'] as String;
-
-    // Correctly extract doctorName
-    final String extractedDoctorName = json['doctorId'] is Map
-        ? json['doctorId']['name'] as String
-        : json['doctorName'] as String? ?? 'Unknown Doctor';
-
+    // Handle doctorId and doctorName
+    String extractedDoctorId = '';
+    String extractedDoctorName = 'Unknown Doctor';
+    if (json['doctorId'] != null) {
+      if (json['doctorId'] is Map) {
+        extractedDoctorId = json['doctorId']['_id']?.toString() ?? '';
+        extractedDoctorName = json['doctorId']['name']?.toString() ?? 'Unknown Doctor';
+      } else {
+        extractedDoctorId = json['doctorId'].toString();
+        extractedDoctorName = json['doctorName']?.toString() ?? 'Unknown Doctor';
+      }
+    }
 
     return MedicalHistoryModel(
-      id: json['_id'] as String,
+      id: json['_id']?.toString() ?? '',
       patientId: extractedPatientId,
       patientName: extractedPatientName,
       doctorId: extractedDoctorId,
       doctorName: extractedDoctorName,
-      diagnosis: json['diagnosis'] as String,
-      treatment: json['treatment'] as String,
-      notes: json['notes'] as String?,
-      lastUpdated: DateTime.parse(json['lastUpdated'] as String),
+      diagnosis: json['diagnosis']?.toString() ?? 'No diagnosis provided',
+      treatment: json['treatment']?.toString() ?? 'No treatment provided',
+      notes: json['notes']?.toString(),
+      lastUpdated: json['lastUpdated'] != null 
+          ? DateTime.tryParse(json['lastUpdated'].toString()) ?? DateTime.now()
+          : DateTime.now(),
     );
   }
 

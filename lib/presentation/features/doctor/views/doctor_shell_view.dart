@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:medsync/presentation/common/widgets/profile_icon.dart';
 import 'package:medsync/presentation/navigation/routes.dart';
 
 class DoctorShellView extends StatefulWidget {
@@ -38,6 +39,12 @@ class _DoctorShellViewState extends State<DoctorShellView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('MedSync'),
+        actions: const [
+          ProfileIcon(),
+        ],
+      ),
       body: widget.child,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,

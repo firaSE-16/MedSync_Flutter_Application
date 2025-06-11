@@ -62,10 +62,10 @@ class _DoctorPatientDetailScreenState extends ConsumerState<DoctorPatientDetailS
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Name: ${patientDetails['name'] ?? ''}'),
-                    Text('Email: ${patientDetails['email'] ?? ''}'),
-                    Text('Gender: ${patientDetails['gender'] ?? ''}'),
-                    Text('Date of Birth: ${patientDetails['dateOfBirth'] ?? ''}'),
+                    Text('Name: ${patientDetails['name'] ?? 'N/A'}'),
+                    Text('Email: ${patientDetails['email'] ?? 'N/A'}'),
+                    Text('Gender: ${patientDetails['gender'] ?? 'N/A'}'),
+                    Text('Date of Birth: ${patientDetails['dateOfBirth'] ?? 'N/A'}'),
                   ],
                 );
               },
@@ -87,8 +87,8 @@ class _DoctorPatientDetailScreenState extends ConsumerState<DoctorPatientDetailS
                   children: records.map((record) => Card(
                     margin: const EdgeInsets.symmetric(vertical: 4.0),
                     child: ListTile(
-                      title: Text('Diagnosis: ${record.diagnosis}'),
-                      subtitle: Text('Treatment: ${record.treatment}'),
+                      title: Text('Diagnosis: ${record.diagnosis ?? 'No diagnosis provided'}'),
+                      subtitle: Text('Treatment: ${record.treatment ?? 'No treatment provided'}'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -128,21 +128,23 @@ class _DoctorPatientDetailScreenState extends ConsumerState<DoctorPatientDetailS
                   children: prescriptions.map((prescription) => Card(
                     margin: const EdgeInsets.symmetric(vertical: 4.0),
                     child: ListTile(
-                      title: Text('Prescription ID: ${prescription.id}'),
-                      subtitle: Text('Medications: ${prescription.medications.length}'),
+                      title: Text('Prescription ID: ${prescription.id ?? 'N/A'}'),
+                      subtitle: Text('Medications: ${prescription.medications?.length ?? 0}'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed: () {
-                              context.push(AppRoutes.doctorEditPrescription.replaceFirst(':id', prescription.id));
+                              context.push(AppRoutes.doctorEditPrescription.replaceFirst(':id', prescription.id ?? ''));
                             },
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete),
                             onPressed: () {
-                              notifier.deletePrescription(prescription.id);
+                              if (prescription.id != null) {
+                                notifier.deletePrescription(prescription.id!);
+                              }
                             },
                           ),
                         ],
@@ -180,4 +182,4 @@ class _DoctorPatientDetailScreenState extends ConsumerState<DoctorPatientDetailS
       ),
     );
   }
-} 
+}

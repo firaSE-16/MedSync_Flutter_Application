@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medsync/data/models/booking_model.dart';
+import 'package:medsync/presentation/common/widgets/profile_icon.dart';
+import 'package:medsync/presentation/features/auth/viewmodels/auth_viewmodel.dart';
 import 'package:medsync/presentation/features/triage/viewmodels/triage_unassigned_bookings_viewmodel.dart';
+import 'package:medsync/presentation/navigation/routes.dart';
 
 class TriageHomeScreen extends ConsumerWidget {
   const TriageHomeScreen({super.key});
@@ -14,6 +17,9 @@ class TriageHomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Triage - Unassigned Bookings'),
+        actions: [
+          const ProfileIcon(),
+        ],
       ),
       body: bookingsAsync.when(
         data: (bookings) => bookings.isEmpty

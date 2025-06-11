@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:medsync/core/providers.dart';
+import 'package:intl/intl.dart';
 
 class PatientBookingScreen extends ConsumerStatefulWidget {
   const PatientBookingScreen({super.key});
@@ -15,6 +15,10 @@ class _PatientBookingScreenState extends ConsumerState<PatientBookingScreen> {
   final _dateController = TextEditingController();
   final _timeController = TextEditingController();
   final _notesController = TextEditingController();
+
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
+
   String? _lookingFor;
   String? _priority;
 
@@ -42,13 +46,14 @@ class _PatientBookingScreenState extends ConsumerState<PatientBookingScreen> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (picked != null) {
       setState(() {
-        _dateController.text = picked.toIso8601String().split('T')[0];
+        _selectedDate = picked;
+        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
   }
@@ -56,13 +61,30 @@ class _PatientBookingScreenState extends ConsumerState<PatientBookingScreen> {
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: _selectedTime ?? TimeOfDay.now(),
     );
     if (picked != null) {
       setState(() {
-        _timeController.text = picked.format(context);
+        _selectedTime = picked;
+        final hour = picked.hour.toString().padLeft(2, '0');
+        final minute = picked.minute.toString().padLeft(2, '0');
+        _timeController.text = '$hour:$minute';
       });
     }
+  }
+
+  // Method to clear all form fields and reset selections
+  void _clearForm() {
+    _formKey.currentState?.reset(); // Resets all form fields that have initial values
+    _dateController.clear();
+    _timeController.clear();
+    _notesController.clear();
+    setState(() {
+      _selectedDate = null;
+      _selectedTime = null;
+      _lookingFor = null;
+      _priority = null;
+    });
   }
 
   @override
@@ -81,6 +103,7 @@ class _PatientBookingScreenState extends ConsumerState<PatientBookingScreen> {
             children: [
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Specialization'),
+                value: _lookingFor, // Set current value to display after clearing
                 items: _specializations.map((specialization) {
                   return DropdownMenuItem(
                     value: specialization,
@@ -106,6 +129,7 @@ class _PatientBookingScreenState extends ConsumerState<PatientBookingScreen> {
               ),
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Priority'),
+                value: _priority, // Set current value to display after clearing
                 items: ['low', 'medium', 'high', 'emergency'].map((priority) {
                   return DropdownMenuItem(
                     value: priority,
@@ -124,6 +148,13 @@ class _PatientBookingScreenState extends ConsumerState<PatientBookingScreen> {
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
+                    if (_selectedDate == null || _selectedTime == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please select both date and time')),
+                      );
+                      return;
+                    }
+
                     try {
                       await ref.read(createBookingUseCaseProvider).call(
                             lookingFor: _lookingFor!,
@@ -133,11 +164,23 @@ class _PatientBookingScreenState extends ConsumerState<PatientBookingScreen> {
                             notes: _notesController.text.isNotEmpty ? _notesController.text : null,
                             patientName: user?.name,
                           );
+
+                      // Show success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Booking created successfully!')));
+
+                      // Refresh bookings data
                       ref.refresh(patientBookingsProvider(null));
-                      context.pop();
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Booking created')));
+
+                      // Clear all form fields and reset selections
+                      _clearForm();
+
+                      // IMPORTANT: Removed context.pop(); to stay on the same screen
+
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                      print('Booking Error: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Failed to create booking: $e')));
                     }
                   }
                 },

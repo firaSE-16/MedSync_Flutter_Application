@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:medsync/presentation/common/widgets/profile_icon.dart';
 import 'package:medsync/presentation/navigation/routes.dart';
 
 class PatientShellView extends StatefulWidget {
@@ -44,7 +45,12 @@ class _PatientShellViewState extends State<PatientShellView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      appBar: AppBar(
+        title: const Text('MedSync'),
+        actions: const [
+          ProfileIcon(),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0), // Consistent padding
         child: widget.child,
