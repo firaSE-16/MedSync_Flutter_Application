@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:medsync/core/providers.dart';
+import 'package:medsync/presentation/navigation/routes.dart';
 // You might need a patient profile viewmodel if you fetch profile data separately
 // For now, it's a simple placeholder.
 
@@ -66,16 +69,16 @@ class PatientProfileScreen extends ConsumerWidget {
               ElevatedButton.icon(
                 onPressed: () {
                   // Implement logout logic: clear token, navigate to login
-                  // ref.read(authViewModelProvider.notifier).logout();
-                  // context.go(AppRoutes.login);
+                  ref.read(authProvider.notifier).logout();
+                  context.go(AppRoutes.login);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Logout functionality to be implemented')),
+                    const SnackBar(content: Text('Logged out successfully!')),
                   );
                 },
                 icon: const Icon(Icons.logout),
                 label: const Text('Logout'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade400,
+                  backgroundColor: Theme.of(context).primaryColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medsync/core/constants/app_constants.dart';
 import 'package:medsync/core/services/shared_preferences_service.dart';
+import 'package:medsync/presentation/common/widgets/profile_icon.dart';
 import 'package:medsync/presentation/features/Admin/views/admin_dashboard_view.dart';
 import 'package:medsync/presentation/features/Admin/views/admin_patient_appointments_view.dart';
 import 'package:medsync/presentation/features/Admin/views/admin_patients_view.dart';
@@ -235,8 +236,94 @@ final routerProvider = Provider<GoRouter>((ref) {
       ShellRoute(
         builder: (context, state, child) {
           return Scaffold(
-            appBar: AppBar(title: const Text("Triage Panel")),
-            body: child,
+            body: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0, right: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: const ProfileIcon(),
+                        onPressed: () async {
+                          final shouldLogout = await showDialog<bool>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Logout'),
+                                content: const Text('Are you sure you want to logout?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      await SharedPreferencesService.clear();
+                                      if (context.mounted) {
+                                        context.go(AppRoutes.login);
+                                      }
+                                    },
+                                    child: const Text('Logout'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: child,
+                  ),
+                ),
+              ],
+            ),
+            bottomNavigationBar: Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF7A6CF0),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: BottomNavigationBar(
+                currentIndex: 0, // Assuming a default for Triage for now
+                onTap: (index) { /* handle navigation if needed */ },
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                type: BottomNavigationBarType.fixed,
+                selectedItemColor: Colors.black,
+                unselectedItemColor: Colors.white,
+                showSelectedLabels: false,
+                showUnselectedLabels: false,
+                iconSize: 28,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home_outlined),
+                    activeIcon: Icon(Icons.home),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.calendar_today_outlined),
+                    activeIcon: Icon(Icons.calendar_today),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.people_outline),
+                    activeIcon: Icon(Icons.people),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.settings_outlined),
+                    activeIcon: Icon(Icons.settings),
+                    label: '',
+                  ),
+                ],
+              ),
+            ),
           );
         },
         routes: [

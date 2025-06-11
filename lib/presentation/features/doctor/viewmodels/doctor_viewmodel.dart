@@ -76,7 +76,8 @@ class DoctorViewModel extends StateNotifier<DoctorState> {
   Future<void> fetchAppointments({String? status, String? date}) async {
     try {
       state = state.copyWith(appointments: const AsyncValue.loading());
-      final appointments = await _getAppointmentsUseCase.call(status: status, date: date);
+      // Always request scheduled appointments for the doctor's home screen timeline
+      final appointments = await _getAppointmentsUseCase.call(status: status ?? 'scheduled', date: date);
       state = state.copyWith(appointments: AsyncValue.data(appointments));
     } catch (e, st) {
       state = state.copyWith(appointments: AsyncValue.error(e, st));

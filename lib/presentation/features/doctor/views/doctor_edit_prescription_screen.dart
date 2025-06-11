@@ -44,7 +44,7 @@ class _DoctorEditPrescriptionScreenState extends ConsumerState<DoctorEditPrescri
   void _addMedication() {
     if (_medicationsController.text.isNotEmpty &&
         _dosageController.text.isNotEmpty &&
-        _frequencyController.text.isNotEmpty ) {
+        _frequencyController.text.isNotEmpty) {
       ref.read(doctorViewModelProvider.notifier).addMedication(
         name: _medicationsController.text,
         dosage: _dosageController.text,
@@ -76,6 +76,7 @@ class _DoctorEditPrescriptionScreenState extends ConsumerState<DoctorEditPrescri
   @override
   Widget build(BuildContext context) {
     final doctorState = ref.watch(doctorViewModelProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -88,158 +89,339 @@ class _DoctorEditPrescriptionScreenState extends ConsumerState<DoctorEditPrescri
           }
           // Pre-fill form fields with existing prescription data
           _medications = prescription.medications;
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                children: [
-                  const Text(
-                    'Add Medications',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _medicationsController,
-                    decoration: const InputDecoration(
-                      labelText: 'Medication Name',
-                      border: OutlineInputBorder(),
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header Section
+                    Container(
+                      padding: const EdgeInsets.all(24.0),
+                      decoration: BoxDecoration(
+                        color: theme.primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Prescription Details',
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Update the patient\'s prescription information below.',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter medication name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _dosageController,
-                          decoration: const InputDecoration(
-                            labelText: 'Dosage',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Required';
-                            }
-                            return null;
-                          },
+                    const SizedBox(height: 32),
+
+                    // Add Medication Section
+                    Text(
+                      'Add New Medication',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextFormField(
+                              controller: _medicationsController,
+                              decoration: InputDecoration(
+                                labelText: 'Medication Name',
+                                hintText: 'Enter medication name',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[50],
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter medication name';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _dosageController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Dosage',
+                                      hintText: 'e.g., 500mg',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey[50],
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Required';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _frequencyController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Frequency',
+                                      hintText: 'e.g., Twice daily',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey[50],
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Required';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: _durationController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Duration',
+                                      hintText: 'e.g., 7 days',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey[50],
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Required';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: _addMedication,
+                                icon: const Icon(Icons.add),
+                                label: const Text('Add Medication'),
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _frequencyController,
-                          decoration: const InputDecoration(
-                            labelText: 'Frequency',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Required';
-                            }
-                            return null;
-                          },
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Current Medications Section
+                    if (doctorState.patientPrescriptions?.value?.isNotEmpty == true) ...[
+                      Text(
+                        'Current Medications',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _durationController,
-                          decoration: const InputDecoration(
-                            labelText: 'Duration',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Required';
-                            }
-                            return null;
-                          },
-                        ),
+                      const SizedBox(height: 16),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: doctorState.patientPrescriptions?.value?.first.medications.length ?? 0,
+                        itemBuilder: (context, index) {
+                          final medication = doctorState.patientPrescriptions?.value?.first.medications[index];
+                          return Card(
+                            elevation: 2,
+                            margin: const EdgeInsets.only(bottom: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          medication?.name ?? 'N/A',
+                                          style: theme.textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '${medication?.dosage ?? 'N/A'} - ${medication?.frequency ?? 'N/A'}',
+                                          style: theme.textTheme.bodyLarge,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_outline),
+                                    color: Colors.red,
+                                    onPressed: () => _removeMedication(index),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: _addMedication,
-                    child: const Text('Add Medication'),
-                  ),
-                  const SizedBox(height: 16),
-                  if (doctorState.patientPrescriptions?.value?.isNotEmpty == true) ...[
-                    const Text(
-                      'Added Medications',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: doctorState.patientPrescriptions?.value?.first.medications.length ?? 0,
-                      itemBuilder: (context, index) {
-                        final medication = doctorState.patientPrescriptions?.value?.first.medications[index];
-                        return Card(
-                          child: ListTile(
-                            title: Text(medication?.name ?? 'N/A'),
-                            subtitle: Text(
-                              '${medication?.dosage ?? 'N/A'} - ${medication?.frequency ?? 'N/A'}',
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () => _removeMedication(index),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _instructionsController,
-                    decoration: const InputDecoration(
-                      labelText: 'Additional Instructions',
-                      border: OutlineInputBorder(),
-                    ),
-                    maxLines: 3,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: doctorState.patientPrescriptions?.isLoading == true ? null : _submitForm,
-                    child: doctorState.patientPrescriptions?.isLoading == true
-                        ? const CircularProgressIndicator()
-                        : const Text('Update Prescription'),
-                  ),
-                  if (doctorState.patientPrescriptions?.hasError == true)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Text(
-                        doctorState.patientPrescriptions?.error.toString() ?? 'An error occurred',
-                        style: const TextStyle(color: Colors.red),
+                    const SizedBox(height: 32),
+
+                    // Additional Instructions Section
+                    Text(
+                      'Additional Instructions',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                ],
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _instructionsController,
+                      decoration: InputDecoration(
+                        hintText: 'Enter any additional instructions for the patient',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey[50],
+                      ),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Submit Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: doctorState.patientPrescriptions?.isLoading == true ? null : _submitForm,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: doctorState.patientPrescriptions?.isLoading == true
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                'Update Prescription',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                    ),
+                    if (doctorState.patientPrescriptions?.hasError == true)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.red[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red[200]!),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.error_outline, color: Colors.red[700]),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  doctorState.patientPrescriptions?.error.toString() ?? 'An error occurred',
+                                  style: TextStyle(color: Colors.red[700]),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Error loading prescription: $error'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  ref.read(doctorViewModelProvider.notifier).fetchPrescriptionDetails(widget.prescriptionId);
-                },
-                child: const Text('Retry'),
-              ),
-            ],
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.red[50],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.red[200]!),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.error_outline, size: 48, color: Colors.red[700]),
+                const SizedBox(height: 16),
+                Text(
+                  'Error loading prescription: $error',
+                  style: TextStyle(color: Colors.red[700]),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    ref.read(doctorViewModelProvider.notifier).fetchPrescriptionDetails(widget.prescriptionId);
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

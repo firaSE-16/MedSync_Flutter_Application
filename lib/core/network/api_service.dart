@@ -8,9 +8,8 @@ import 'package:medsync/data/models/booking_model.dart'; // For BookingModel
 import 'package:medsync/data/models/medical_history_model.dart'; // For MedicalHistoryModel
 
 class ApiService {
-  final Dio _dio = DioClient().dio; // DioClient should manage base URL and token interceptors
-
-  // --- Authentication Endpoints ---
+  final Dio _dio = DioClient().dio; 
+  
   Future<UserModel> registerPatient(Map<String, dynamic> data) async {
     try {
       final response = await _dio.post('/auth/register/patient', data: data);
