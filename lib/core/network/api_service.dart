@@ -343,6 +343,217 @@ class ApiService {
     }
   }
 
+  // --- Doctor Endpoints ---
+
+  Future<List<AppointmentModel>> getDoctorAppointments({String? status, String? date}) async {
+    try {
+      final queryParameters = <String, dynamic>{};
+      if (status != null) queryParameters['status'] = status;
+      if (date != null) queryParameters['date'] = date;
+
+      final response = await _dio.get('/doctor/appointments', queryParameters: queryParameters);
+      if (response.statusCode == 200 && response.data['success']) {
+        return (response.data['data'] as List)
+            .map((e) => AppointmentModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw response.data['message'] ?? 'Failed to load doctor appointments';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<AppointmentModel> updateAppointmentStatus(String appointmentId, String status) async {
+    try {
+      final response = await _dio.put('/doctor/appointments/$appointmentId/status', data: {'status': status});
+      if (response.statusCode == 200 && response.data['success']) {
+        return AppointmentModel.fromJson(response.data['data']);
+      } else {
+        throw response.data['message'] ?? 'Failed to update appointment status';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<List<UserModel>> getDoctorPatients() async {
+    try {
+      final response = await _dio.get('/doctor/patients');
+      if (response.statusCode == 200 && response.data['success']) {
+        return (response.data['data'] as List)
+            .map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw response.data['message'] ?? 'Failed to load doctor patients';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> getPatientDetailsForDoctor(String patientId) async {
+    try {
+      final response = await _dio.get('/doctor/patients/$patientId');
+      if (response.statusCode == 200 && response.data['success']) {
+        
+        return response.data['data'];
+      } else {
+        throw response.data['message'] ?? 'Failed to load patient details';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<List<MedicalHistoryModel>> getPatientMedicalRecordsForDoctor(String patientId) async {
+    try {
+      final response = await _dio.get('/doctor/patients/$patientId/medical-records');
+      if (response.statusCode == 200 && response.data['success']) {
+        return (response.data['data'] as List)
+            .map((e) => MedicalHistoryModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw response.data['message'] ?? 'Failed to load patient medical records';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<MedicalHistoryModel> getMedicalRecordDetails(String recordId) async {
+    try {
+      final response = await _dio.get('/doctor/medical-records/$recordId');
+      if (response.statusCode == 200 && response.data['success']) {
+        return MedicalHistoryModel.fromJson(response.data['data']);
+      } else {
+        throw response.data['message'] ?? 'Failed to load medical record details';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<MedicalHistoryModel> createMedicalRecord({required String patientId, required String diagnosis, required String treatment, String? notes}) async {
+    try {
+      final data = {
+        'patientId': patientId,
+        'diagnosis': diagnosis,
+        'treatment': treatment,
+        if (notes != null) 'notes': notes,
+      };
+      final response = await _dio.post('/doctor/medical-records', data: data);
+      if (response.statusCode == 201 && response.data['success']) {
+        return MedicalHistoryModel.fromJson(response.data['data']);
+      } else {
+        throw response.data['message'] ?? 'Failed to create medical record';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<MedicalHistoryModel> updateMedicalRecord(String recordId, {String? diagnosis, String? treatment, String? notes}) async {
+    try {
+      final data = {
+        if (diagnosis != null) 'diagnosis': diagnosis,
+        if (treatment != null) 'treatment': treatment,
+        if (notes != null) 'notes': notes,
+      };
+      final response = await _dio.put('/doctor/medical-records/$recordId', data: data);
+      if (response.statusCode == 200 && response.data['success']) {
+        return MedicalHistoryModel.fromJson(response.data['data']);
+      } else {
+        throw response.data['message'] ?? 'Failed to update medical record';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<void> deleteMedicalRecord(String recordId) async {
+    try {
+      final response = await _dio.delete('/doctor/medical-records/$recordId');
+      if (response.statusCode != 200 || !response.data['success']) {
+        throw response.data['message'] ?? 'Failed to delete medical record';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<List<PrescriptionModel>> getPatientPrescriptionsForDoctor(String patientId) async {
+    try {
+      final response = await _dio.get('/doctor/patients/$patientId/prescriptions');
+      if (response.statusCode == 200 && response.data['success']) {
+        return (response.data['data'] as List)
+            .map((e) => PrescriptionModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw response.data['message'] ?? 'Failed to load patient prescriptions';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<PrescriptionModel> getPrescriptionDetails(String prescriptionId) async {
+    try {
+      final response = await _dio.get('/doctor/prescriptions/$prescriptionId');
+      if (response.statusCode == 200 && response.data['success']) {
+        return PrescriptionModel.fromJson(response.data['data']);
+      } else {
+        throw response.data['message'] ?? 'Failed to load prescription details';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<PrescriptionModel> createPrescription({required String patientId, required List<Map<String, dynamic>> medications}) async {
+    try {
+      final data = {
+        'patientId': patientId,
+        'medications': medications,
+      };
+      final response = await _dio.post('/doctor/prescriptions', data: data);
+      if (response.statusCode == 201 && response.data['success']) {
+        return PrescriptionModel.fromJson(response.data['data']);
+      } else {
+        throw response.data['message'] ?? 'Failed to create prescription';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<PrescriptionModel> updatePrescription(String prescriptionId, {required List<Map<String, dynamic>> medications}) async {
+    try {
+      final data = {
+        'medications': medications,
+      };
+      final response = await _dio.put('/doctor/prescriptions/$prescriptionId', data: data);
+      if (response.statusCode == 200 && response.data['success']) {
+        return PrescriptionModel.fromJson(response.data['data']);
+      } else {
+        throw response.data['message'] ?? 'Failed to update prescription';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<void> deletePrescription(String prescriptionId) async {
+    try {
+      final response = await _dio.delete('/doctor/prescriptions/$prescriptionId');
+      if (response.statusCode != 200 || !response.data['success']) {
+        throw response.data['message'] ?? 'Failed to delete prescription';
+      }
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
   // --- Error Handling ---
   String _handleError(DioException e) {
     if (e.response != null) {

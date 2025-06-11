@@ -24,6 +24,15 @@ import 'package:medsync/presentation/features/splash/views/splash_screen.dart';
 import 'package:medsync/presentation/navigation/routes.dart';
 import 'package:medsync/presentation/features/Triage/views/triage_home_screen.dart';
 import 'package:medsync/presentation/features/Triage/views/triage_booking_detail_screen.dart';
+import 'package:medsync/presentation/features/doctor/views/doctor_home_screen.dart';
+import 'package:medsync/presentation/features/doctor/views/doctor_appointments_screen.dart';
+import 'package:medsync/presentation/features/doctor/views/doctor_patients_screen.dart';
+import 'package:medsync/presentation/features/doctor/views/doctor_patient_detail_screen.dart';
+import 'package:medsync/presentation/features/doctor/views/doctor_shell_view.dart';
+import 'package:medsync/presentation/features/doctor/views/doctor_create_medical_record_screen.dart';
+import 'package:medsync/presentation/features/doctor/views/doctor_create_prescription_screen.dart';
+import 'package:medsync/presentation/features/doctor/views/doctor_edit_medical_record_screen.dart';
+import 'package:medsync/presentation/features/doctor/views/doctor_edit_prescription_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -102,20 +111,71 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       ShellRoute(
         builder: (context, state, child) {
-          return Scaffold(
-            appBar: AppBar(title: const Text("Doctor Panel")),
-            body: child,
-          );
+          return DoctorShellView(child: child);
         },
         routes: [
           GoRoute(
             path: AppRoutes.doctorHome,
+            builder: (context, state) => const DoctorHomeScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.doctorAppointment,
+            builder: (context, state) => const DoctorAppointmentsScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.doctorPatients,
+            builder: (context, state) => const DoctorPatientsScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.patientDetail,
+            builder: (context, state) {
+              final patientId = state.pathParameters['id']!;
+              return DoctorPatientDetailScreen(patientId: patientId);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.doctorPrescription,
             builder: (context, state) => Container(
               color: Colors.purple.shade200,
-              child: const Center(child: Text("Doctor Home Page")),
+              child: const Center(child: Text("Doctor Prescription Page")),
             ),
           ),
-          // ... other doctor routes ...
+          GoRoute(
+            path: AppRoutes.doctorHistory,
+            builder: (context, state) => Container(
+              color: Colors.purple.shade200,
+              child: const Center(child: Text("Doctor History Page")),
+            ),
+          ),
+          GoRoute(
+            path: AppRoutes.doctorCreateMedicalRecord,
+            builder: (context, state) {
+              final patientId = state.uri.queryParameters['patientId'];
+              return DoctorCreateMedicalRecordScreen(patientId: patientId!);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.doctorEditMedicalRecord,
+            builder: (context, state) {
+              final recordId = state.pathParameters['id']!;
+              final patientId = state.uri.queryParameters['patientId']!;
+              return DoctorEditMedicalRecordScreen(recordId: recordId, patientId: patientId);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.doctorCreatePrescription,
+            builder: (context, state) {
+              final patientId = state.uri.queryParameters['patientId'];
+              return DoctorCreatePrescriptionScreen(patientId: patientId!);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.doctorEditPrescription,
+            builder: (context, state) {
+              final prescriptionId = state.pathParameters['id']!;
+              return DoctorEditPrescriptionScreen(prescriptionId: prescriptionId);
+            },
+          ),
         ],
       ),
       ShellRoute(

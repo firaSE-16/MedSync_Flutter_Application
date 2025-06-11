@@ -13,6 +13,11 @@ class AppRoutes {
   static const String patientDetail = '/doctor/patient-detail/:id';
   static const String doctorPrescription = '/doctor/patient-prescription';
   static const String doctorHistory = '/doctor/patient-history';
+  static const String doctorCreateMedicalRecord = '/doctor/create-medical-record';
+  static const String doctorEditMedicalRecord = '/doctor/edit-medical-record/:id';
+  static const String doctorCreatePrescription = '/doctor/create-prescription';
+  static const String doctorEditPrescription = '/doctor/edit-prescription/:id';
+  static const String doctorPatients = '/doctor/patients';
 
   // Patient Routes
 static const String patientHome = '/patient/home';

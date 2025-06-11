@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:medsync/core/network/api_service.dart';
+import 'package:medsync/data/models/appointment_model.dart';
 import 'package:medsync/data/models/booking_model.dart';
 import 'package:medsync/data/models/user_model.dart';
 import 'package:medsync/presentation/features/auth/viewmodels/auth_viewmodel.dart';
@@ -31,6 +32,31 @@ import 'package:medsync/domain/usecases/triage/get_available_doctors_usecase.dar
 import 'package:medsync/domain/usecases/triage/process_triage_usecase.dart';
 import 'package:medsync/domain/usecases/triage/update_medical_history_usecase.dart';
 import 'package:medsync/domain/usecases/triage/get_triage_patients_usecase.dart';
+
+// --- Doctor Module Imports ---
+import 'package:medsync/data/repositories/doctor_repository_impl.dart';
+import 'package:medsync/domain/repositories/doctor_repository.dart';
+import 'package:medsync/domain/usecases/doctor/get_doctor_appointments_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/update_appointment_status_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/get_doctor_patients_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/get_patient_details_for_doctor_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/get_patient_medical_records_for_doctor_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/get_medical_record_details_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/create_medical_record_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/update_medical_record_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/delete_medical_record_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/get_patient_prescriptions_for_doctor_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/get_prescription_details_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/create_prescription_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/update_prescription_usecase.dart';
+import 'package:medsync/domain/usecases/doctor/delete_prescription_usecase.dart';
+import 'package:medsync/presentation/features/doctor/viewmodels/doctor_appointments_viewmodel.dart';
+import 'package:medsync/presentation/features/doctor/viewmodels/doctor_patients_viewmodel.dart';
+import 'package:medsync/presentation/features/doctor/viewmodels/doctor_patient_detail_viewmodel.dart';
+import 'package:medsync/presentation/features/doctor/viewmodels/doctor_create_medical_record_viewmodel.dart';
+import 'package:medsync/presentation/features/doctor/viewmodels/doctor_edit_medical_record_viewmodel.dart';
+import 'package:medsync/presentation/features/doctor/viewmodels/doctor_create_prescription_viewmodel.dart';
+import 'package:medsync/presentation/features/doctor/viewmodels/doctor_edit_prescription_viewmodel.dart';
 
 // --- Core Providers ---
 // API Service Provider - Now ensures it's a singleton without creating a new instance
@@ -140,4 +166,146 @@ final updateMedicalHistoryUseCaseProvider = Provider<UpdateMedicalHistoryUseCase
 final getTriagePatientsUseCaseProvider = Provider<GetTriagePatientsUseCase>((ref) {
   final repository = ref.read(triageRepositoryProvider);
   return GetTriagePatientsUseCase(repository);
+});
+
+// --- Doctor Module Providers ---
+
+// Doctor Repository Provider
+final doctorRepositoryProvider = Provider<DoctorRepository>((ref) {
+  final apiService = ref.read(apiServiceProvider);
+  return DoctorRepositoryImpl(apiService);
+});
+
+// Doctor Use Case Providers
+final getDoctorAppointmentsUseCaseProvider = Provider<GetDoctorAppointmentsUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return GetDoctorAppointmentsUseCase(repository);
+});
+
+final updateAppointmentStatusUseCaseProvider = Provider<UpdateAppointmentStatusUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return UpdateAppointmentStatusUseCase(repository);
+});
+
+final getDoctorPatientsUseCaseProvider = Provider<GetDoctorPatientsUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return GetDoctorPatientsUseCase(repository);
+});
+
+final getPatientDetailsForDoctorUseCaseProvider = Provider<GetPatientDetailsForDoctorUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return GetPatientDetailsForDoctorUseCase(repository);
+});
+
+final getPatientMedicalRecordsForDoctorUseCaseProvider = Provider<GetPatientMedicalRecordsForDoctorUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return GetPatientMedicalRecordsForDoctorUseCase(repository);
+});
+
+final getMedicalRecordDetailsUseCaseProvider = Provider<GetMedicalRecordDetailsUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return GetMedicalRecordDetailsUseCase(repository);
+});
+
+final createMedicalRecordUseCaseProvider = Provider<CreateMedicalRecordUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return CreateMedicalRecordUseCase(repository);
+});
+
+final updateMedicalRecordUseCaseProvider = Provider<UpdateMedicalRecordUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return UpdateMedicalRecordUseCase(repository);
+});
+
+final deleteMedicalRecordUseCaseProvider = Provider<DeleteMedicalRecordUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return DeleteMedicalRecordUseCase(repository);
+});
+
+final getPatientPrescriptionsForDoctorUseCaseProvider = Provider<GetPatientPrescriptionsForDoctorUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return GetPatientPrescriptionsForDoctorUseCase(repository);
+});
+
+final getPrescriptionDetailsUseCaseProvider = Provider<GetPrescriptionDetailsUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return GetPrescriptionDetailsUseCase(repository);
+});
+
+final createPrescriptionUseCaseProvider = Provider<CreatePrescriptionUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return CreatePrescriptionUseCase(repository);
+});
+
+final updatePrescriptionUseCaseProvider = Provider<UpdatePrescriptionUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return UpdatePrescriptionUseCase(repository);
+});
+
+final deletePrescriptionUseCaseProvider = Provider<DeletePrescriptionUseCase>((ref) {
+  final repository = ref.read(doctorRepositoryProvider);
+  return DeletePrescriptionUseCase(repository);
+});
+
+// Doctor ViewModel Providers
+final doctorAppointmentsViewModelProvider = StateNotifierProvider<DoctorAppointmentsViewModel, AsyncValue<List<AppointmentModel>>>((ref) {
+  final getAppointments = ref.watch(getDoctorAppointmentsUseCaseProvider);
+  final updateStatus = ref.watch(updateAppointmentStatusUseCaseProvider);
+  return DoctorAppointmentsViewModel(getAppointments, updateStatus);
+});
+
+final doctorPatientsViewModelProvider = StateNotifierProvider<DoctorPatientsViewModel, AsyncValue<List<UserModel>>>((ref) {
+  final getPatients = ref.watch(getDoctorPatientsUseCaseProvider);
+  return DoctorPatientsViewModel(getPatients);
+});
+
+final doctorPatientDetailViewModelProvider = StateNotifierProvider.family<DoctorPatientDetailViewModel, AsyncValue<void>, String>((ref, patientId) {
+  final getPatientDetails = ref.watch(getPatientDetailsForDoctorUseCaseProvider);
+  final getMedicalRecords = ref.watch(getPatientMedicalRecordsForDoctorUseCaseProvider);
+  final getMedicalRecordDetails = ref.watch(getMedicalRecordDetailsUseCaseProvider);
+  final createMedicalRecord = ref.watch(createMedicalRecordUseCaseProvider);
+  final updateMedicalRecord = ref.watch(updateMedicalRecordUseCaseProvider);
+  final deleteMedicalRecord = ref.watch(deleteMedicalRecordUseCaseProvider);
+  final getPrescriptions = ref.watch(getPatientPrescriptionsForDoctorUseCaseProvider);
+  final getPrescriptionDetails = ref.watch(getPrescriptionDetailsUseCaseProvider);
+  final createPrescription = ref.watch(createPrescriptionUseCaseProvider);
+  final updatePrescription = ref.watch(updatePrescriptionUseCaseProvider);
+  final deletePrescription = ref.watch(deletePrescriptionUseCaseProvider);
+
+  return DoctorPatientDetailViewModel(
+    patientId,
+    getPatientDetails,
+    getMedicalRecords,
+    getMedicalRecordDetails,
+    createMedicalRecord,
+    updateMedicalRecord,
+    deleteMedicalRecord,
+    getPrescriptions,
+    getPrescriptionDetails,
+    createPrescription,
+    updatePrescription,
+    deletePrescription,
+  );
+});
+
+final doctorCreateMedicalRecordViewModelProvider = StateNotifierProvider<DoctorCreateMedicalRecordViewModel, AsyncValue<void>>((ref) {
+  final createMedicalRecord = ref.watch(createMedicalRecordUseCaseProvider);
+  return DoctorCreateMedicalRecordViewModel(createMedicalRecord);
+});
+
+final doctorEditMedicalRecordViewModelProvider = StateNotifierProvider.family<DoctorEditMedicalRecordViewModel, AsyncValue<void>, String>((ref, recordId) {
+  final updateMedicalRecord = ref.watch(updateMedicalRecordUseCaseProvider);
+  final getMedicalRecordDetails = ref.watch(getMedicalRecordDetailsUseCaseProvider);
+  return DoctorEditMedicalRecordViewModel(recordId, updateMedicalRecord, getMedicalRecordDetails);
+});
+
+final doctorCreatePrescriptionViewModelProvider = StateNotifierProvider<DoctorCreatePrescriptionViewModel, AsyncValue<void>>((ref) {
+  final createPrescription = ref.watch(createPrescriptionUseCaseProvider);
+  return DoctorCreatePrescriptionViewModel(createPrescription);
+});
+
+final doctorEditPrescriptionViewModelProvider = StateNotifierProvider.family<DoctorEditPrescriptionViewModel, AsyncValue<void>, String>((ref, prescriptionId) {
+  final updatePrescription = ref.watch(updatePrescriptionUseCaseProvider);
+  final getPrescriptionDetails = ref.watch(getPrescriptionDetailsUseCaseProvider);
+  return DoctorEditPrescriptionViewModel(prescriptionId, updatePrescription, getPrescriptionDetails);
 });
